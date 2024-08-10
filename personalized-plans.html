@@ -3,20 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalized Plans - Vitals</title>
-    <link rel="stylesheet" href="vitals.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Personalized Dietary Plans</title>
+    <style>
+        /* Basic styling for the chatbot */
+        #chatbox {
+            width: 300px;
+            height: 400px;
+            border: 1px solid #ccc;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chatlog {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        #user-input {
+            display: flex;
+        }
+        #user-input input {
+            flex: 1;
+            padding: 10px;
+        }
+        #user-input button {
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Personalized Dietary Plans</h1>
-    </header>
-    <main>
-        <section class="chatbot-section">
-            <h2>Chat with Us to Get Your Personalized Plan</h2>
-            <div id="chatbot-container"></div>
-        </section>
-    </main>
-    <script src="chatbot.js"></script> <!-- Include your chatbot logic -->
+    <section id="personalized-plans">
+        <h2>Personalized Dietary Plans</h2>
+        <!-- Other content related to personalized plans -->
+    </section>
+
+    <!-- Chatbox -->
+    <div id="chatbox">
+        <div id="chatlog"></div>
+        <div id="user-input">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatlog = document.getElementById('chatlog');
+        const userMessageInput = document.getElementById('user-message');
+        let userData = {};
+
+        function sendMessage() {
+            const message = userMessageInput.value.trim();
+            if (message === '') return;
+
+            // Display user message
+            chatlog.innerHTML += `<div>User: ${message}</div>`;
+            userMessageInput.value = '';
+
+            // Handle chatbot response
+            handleChatbotResponse(message);
+        }
+
+        function handleChatbotResponse(message) {
+            const lowerCaseMessage = message.toLowerCase();
+            if (!userData.name) {
+                userData.name = message;
+                chatlog.innerHTML += `<div>Chatbot: Nice to meet you, ${message}. What disease do you have?</div>`;
+            } else if (!userData.disease) {
+                userData.disease = message;
+                chatlog.innerHTML += `<div>Chatbot: Thank you. How old are you?</div>`;
+            } else if (!userData.age) {
+                userData.age = message;
+                chatlog.innerHTML += `<div>Chatbot: Thank you. I have noted your details.</div>`;
+
+                // Send data to Supabase
+                sendDataToSupabase(userData);
+
+                // Clear userData object
+                userData = {};
+            } else {
+                chatlog.innerHTML += `<div>Chatbot: I have already collected your details. Thank you!</div>`;
+            }
+
+            chatlog.scrollTop = chatlog.scrollHeight; // Auto-scroll to the latest message
+        }
+
+        async function sendDataToSupabase(data) {
+            const supabaseUrl = 'https://zglbfzrucwtobuqvlhpi.supabase.co'; // Replace with your Supabase URL
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGJmenJ1Y3d0b2J1cXZsaHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMzMDM0MTcsImV4cCI6MjAzODg3OTQxN30.IHqZOxX2C-0tg1BgNMcuNbAHx0H2y3GPeM6SEp1bHD0'; // Replace with your Supabase key
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            const { error } = await supabase
+                .from('your-table-name') // Replace with your table name
+                .insert([data]);
+
+            if (error) {
+                console.error('Error inserting data:', error);
+            } else {
+                console.log('Data inserted successfully:', data);
+            }
+        }
+    </script>
 </body>
 </html>
+
+
