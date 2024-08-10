@@ -399,3 +399,75 @@ footer {
 footer p {
     margin: 0;
 }
+/* Basic styling for the chatbot container */
+#chatbox {
+        width: 350px;
+        height: 500px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    /* Styling for the chat log area */
+#chatlog {
+        flex: 1;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        overflow-y: auto;
+        background: #f9f9f9;
+        color: #333;
+    }
+
+    /* Styling for messages */
+    #chatlog div {
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+
+    #chatlog .user {
+        color: #007bff;
+    }
+
+    #chatlog .chatbot {
+        color: #28a745;
+    }
+
+    /* Styling for the user input area */
+    #user-input {
+        display: flex;
+        border-top: 1px solid #eee;
+        background: #fff;
+    }
+
+    /* Styling for the input field */
+    #user-input input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 0;
+        outline: none;
+        font-size: 16px;
+    }
+
+    /* Styling for the send button */
+    #user-input button {
+        padding: 10px;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    #user-input button:hover {
+        background: #0056b3;
+    }
+
