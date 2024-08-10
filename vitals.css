@@ -471,3 +471,32 @@ footer p {
         background: #0056b3;
     }
 
+    /* Basic styling for the chatbot */
+    #chatbox {
+        width: 300px;
+        height: 400px;
+        border: 1px solid #ccc;
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #chatlog {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+    }
+    #user-input {
+        display: flex;
+    }
+    #user-input input {
+        flex: 1;
+        padding: 10px;
+    }
+    #user-input button {
+        padding: 10px;
+    }
+
