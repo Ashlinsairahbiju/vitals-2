@@ -1,84 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personalized Dietary Plans</title>
-    
-</head>
-<body>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+        color: #333;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      #personalized-plans {
+        padding: 20px;
+        background: #0056b3;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        color: #f5f7f9;
+        margin-top: 20px;
+      }
+
+      #personalized-plans h2 {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      #chatbox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300px;
+        max-height: 400px;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+      }
+
+      #chatlog {
+        height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      #user-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: #f9f9f9;
+      }
+
+      #user-message {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 10px;
+      }
+
+      #user-input button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background: #007bff;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      #user-input button:hover {
+        background: #0056b3;
+      }
+
+      #chatlog div {
+        margin-bottom: 10px;
+        max-width: 80%; /* Ensure messages don't stretch too wide */
+        padding: 5px;
+        border-radius: 4px;
+      }
+
+      #chatlog div.user {
+        background-color: #d1e7dd;
+        align-self: flex-end;
+        text-align: right;
+        color: #0056b3;
+      }
+
+      #chatlog div.chatbot {
+        background-color: #f8d7da;
+        align-self: flex-start;
+        text-align: left;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
     <section id="personalized-plans">
-        <h2>Personalized Dietary Plans</h2>
-        <!-- Other content related to personalized plans -->
+      <h2>Personalized Dietary Plans</h2>
     </section>
 
     <!-- Chatbox -->
     <div id="chatbox">
-        <div id="chatlog"></div>
-        <div id="user-input">
-            <input type="text" id="user-message" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+      <div id="chatlog"></div>
+      <div id="user-input">
+        <input
+          type="text"
+          id="user-message"
+          placeholder="Type your message..."
+        />
+        <button onclick="sendMessage()" id="btn">Send</button>
+      </div>
     </div>
 
     <script>
-        const chatlog = document.getElementById('chatlog');
-        const userMessageInput = document.getElementById('user-message');
-        let userData = {};
+      function sendMessage() {
+        const chatlog = document.getElementById("chatlog");
+        const userMessageInput = document.getElementById("user-message");
+        const message = userMessageInput.value.trim();
+        if (message === "") return;
 
-        function sendMessage() {
-            const message = userMessageInput.value.trim();
-            if (message === '') return;
+        console.log(message);
 
-            // Display user message
-            chatlog.innerHTML += `<div>User: ${message}</div>`;
-            userMessageInput.value = '';
+        // Display user message
+        chatlog.innerHTML += `<div class="user">${message}</div>`;
+        userMessageInput.value = "";
 
-            // Handle chatbot response
-            handleChatbotResponse(message);
-        }
+        // Simulate chatbot response
+        handleChatbotResponse(message);
+      }
 
-        function handleChatbotResponse(message) {
-            const lowerCaseMessage = message.toLowerCase();
-            if (!userData.name) {
-                userData.name = message;
-                chatlog.innerHTML += `<div>Chatbot: Nice to meet you, ${message}. What disease do you have?</div>`;
-            } else if (!userData.disease) {
-                userData.disease = message;
-                chatlog.innerHTML += `<div>Chatbot: Thank you. How old are you?</div>`;
-            } else if (!userData.age) {
-                userData.age = message;
-                chatlog.innerHTML += `<div>Chatbot: Thank you. I have noted your details.</div>`;
+      async function handleChatbotResponse(message) {
+        const response = await fetch("http://localhost:3000", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", // Add this line to specify JSON data
+          },
+          body: JSON.stringify({ data: message }),
+        });
+        const res = await response.json();
+        const result = res?.data.choices[0].message.content;
+        console.log("response : " + result);
 
-                // Send data to Supabase
-                sendDataToSupabase(userData);
+        // Display chatbot response
+        chatlog.innerHTML += `<div class="chatbot">${result}</div>`;
 
-                // Clear userData object
-                userData = {};
-            } else {
-                chatlog.innerHTML += `<div>Chatbot: I have already collected your details. Thank you!</div>`;
-            }
-
-            chatlog.scrollTop = chatlog.scrollHeight; // Auto-scroll to the latest message
-        }
-
-        async function sendDataToSupabase(data) {
-            const supabaseUrl = 'https://zglbfzrucwtobuqvlhpi.supabase.co'; // Replace with your Supabase URL
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGJmenJ1Y3d0b2J1cXZsaHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMzMDM0MTcsImV4cCI6MjAzODg3OTQxN30.IHqZOxX2C-0tg1BgNMcuNbAHx0H2y3GPeM6SEp1bHD0'; // Replace with your Supabase key
-            const supabase = createClient(supabaseUrl, supabaseKey);
-
-            const { error } = await supabase
-                .from('your-table-name') // Replace with your table name
-                .insert([data]);
-
-            if (error) {
-                console.error('Error inserting data:', error);
-            } else {
-                console.log('Data inserted successfully:', data);
-            }
-        }
+        chatlog.scrollTop = chatlog.scrollHeight; // Auto-scroll to the latest message
+      }
     </script>
-</body>
+  </body>
 </html>
-
-
